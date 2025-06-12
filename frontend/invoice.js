@@ -35,38 +35,47 @@ document.getElementById("submit").addEventListener("click", async () => {
     }
   }
 
-  // Optional: log total to browser for verification
   console.log("Grand Total:", grandTotal.toFixed(2));
 
   let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, '\n');
-  // Check for "palfinger" (case-insensitive)
-if (toName.toLowerCase() === "palfinger") {
-  toName = "PALFINGER ASIA PACIFIC PTE LTD\nNO 4, TUAS LOOP\nSINGAPORE 637342\nPALMS230082/ KA5405653 / OA1952633\nBONGKOT FIELD/ BU :SVC/LSA";
-}
+  if (toName.toLowerCase() === "palfinger") {
+    toName = `PALFINGER ASIA PACIFIC PTE LTD
+NO 4, TUAS LOOP
+SINGAPORE 637342
+PALMS230082/ KA5405653 / OA1952633
+BONGKOT FIELD/ BU :SVC/LSA`;
+  }
+
   const doNumber = document.getElementById("do-number").value.trim();
   const poNumber = document.getElementById("po-number").value.trim();
 
-  const response = await fetch("http://localhost:3000/generate-invoice", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      items,
-      toName,
-      doNumber,
-      poNumber,
-      grandTotal,
-    }),
-  });
+  try {
+    const response = await fetch("/generate-invoice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items,
+        toName,
+        doNumber,
+        poNumber,
+        grandTotal,
+      }),
+    });
 
-  if (response.ok) {
+    if (!response.ok) throw new Error("Invoice generation failed");
+
     const blob = await response.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "invoice.pdf";
-    link.click();
-  } else {
-    alert("Error generating PDF");
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "invoice.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    alert("Error generating invoice PDF: " + err.message);
   }
 });

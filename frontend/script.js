@@ -28,52 +28,43 @@ document.getElementById("submit").addEventListener("click", async () => {
   }
 
   let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, '\n');
-// Check for "palfinger" (case-insensitive)
-if (toName.toLowerCase() === "palfinger") {
-  toName = "PALFINGER ASIA PACIFIC PTE LTD\nNO 4, TUAS LOOP\nSINGAPORE 637342\nPALMS230082/ KA5405653 / OA1952633\nBONGKOT FIELD/ BU :SVC/LSA";
-}
+  if (toName.toLowerCase() === "palfinger") {
+    toName = `PALFINGER ASIA PACIFIC PTE LTD
+NO 4, TUAS LOOP
+SINGAPORE 637342
+PALMS230082/ KA5405653 / OA1952633
+BONGKOT FIELD/ BU :SVC/LSA`;
+  }
 
   const doNumber = document.getElementById("do-number").value.trim();
   const poNumber = document.getElementById("po-number").value.trim();
 
-  const response = await fetch("http://localhost:3000/generate-do", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      items,
-      toName,
-      doNumber,
-      poNumber,
-    }),
-  });
+  try {
+    const response = await fetch("/generate-do", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items,
+        toName,
+        doNumber,
+        poNumber,
+      }),
+    });
 
-  if (response.ok) {
+    if (!response.ok) throw new Error("PDF generation failed");
+
     const blob = await response.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "delivery_order.pdf";
-    link.click();
-  } else {
-    alert("Error generating DO PDF");
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "delivery_order.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    alert("Error generating DO PDF: " + err.message);
   }
 });
-
-  const navButtons = document.querySelectorAll('.nav-button');
-
-  navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      navButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-    });
-  });
-
-  // Optional: Mark current page as active based on URL
-  const current = window.location.pathname;
-  navButtons.forEach(btn => {
-    if (btn.getAttribute('href') === current) {
-      btn.classList.add('active');
-    }
-  });
-
