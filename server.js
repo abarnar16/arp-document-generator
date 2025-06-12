@@ -123,7 +123,6 @@ app.post("/generate-invoice", (req, res) => {
 doc.lineTo(550, footerY - 10).stroke();
 
 doc.fontSize(10).font('Helvetica')
-  .text("Received items in good condition", 60, footerY)
   .text("For ARP Engineering Pte. Ltd", 380, footerY + 10); // shifted right
 
   doc.end();
