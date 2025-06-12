@@ -1,26 +1,17 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
 const path = require('path');
 
-
-
-
-
 const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Serve frontend static files
 app.use(express.static(path.join(__dirname, 'frontend')));
 
-// For any other route not handled, send index.html (optional, useful if SPA)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-});
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static('frontend'));
-
-// === ROUTE 1: Generate INVOICE PDF ===
 // === ROUTE 1: Generate INVOICE PDF ===
 app.post("/generate-invoice", (req, res) => {
   const { items, toName, doNumber, poNumber, grandTotal } = req.body;
@@ -230,9 +221,14 @@ app.post("/generate-do", (req, res) => {
 
   doc.end();
 });
+// Optional SPA fallback route - serve index.html for any unknown GET route
+// Place this AFTER API routes, otherwise it will block POST routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
 
-// === START SERVER ===
-const PORT = 3000;
+// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
