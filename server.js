@@ -3,8 +3,19 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
+const path = require('path');
+
+
+
+
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// For any other route not handled, send index.html (optional, useful if SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('frontend'));
