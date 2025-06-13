@@ -47,6 +47,20 @@ app.post("/generate-invoice", (req, res) => {
   doc.font('Helvetica-Bold').fontSize(20).fillColor('#8B0000')
     .text("ARP ENGINEERING PTE. LTD.", { align: "center" });
 
+const marginTop = 1;
+const pageWidth = doc.page.width;
+
+doc.image("frontend/images/bizsafe.png", pageWidth - 80 - 10, marginTop, {
+  width: 80
+
+
+
+});
+const imageWidth = 80;
+const xRight = doc.page.width - imageWidth - 20; // 38 is your current left margin, reused as right margin
+doc.image("frontend/images/bqc_cert.png", xRight, 50, { width: imageWidth });
+
+
   doc.fillColor("black").fontSize(10).font('Helvetica')
     .text("No.5, Soon Lee Street, Pioneer Point, #05-60, Singapore - 627 607", { align: "center" })
     .text("Tel & Fax: 62535529  Mobile: +65 9239 7825", { align: "center" })
@@ -173,6 +187,20 @@ app.post("/generate-do", (req, res) => {
   doc.font('Helvetica-Bold').fontSize(20).fillColor('#8B0000')
     .text("ARP ENGINEERING PTE. LTD.", { align: "center" });
 
+const marginTop = 1;
+const pageWidth = doc.page.width;
+
+doc.image("frontend/images/bizsafe.png", pageWidth - 80 - 10, marginTop, {
+  width: 80
+
+
+
+});
+const imageWidth = 80;
+const xRight = doc.page.width - imageWidth - 20; // 38 is your current left margin, reused as right margin
+doc.image("frontend/images/bqc_cert.png", xRight, 50, { width: imageWidth });
+
+
   doc.fillColor("black").fontSize(10).font('Helvetica')
     .text("No.5, Soon Lee Street, Pioneer Point, #05-60, Singapore - 627 607", { align: "center" })
     .text("Tel & Fax: 62535529  Mobile: +65 9239 7825", { align: "center" })
@@ -276,6 +304,20 @@ app.post("/generate-quotation", (req, res) => {
 
   doc.font('Helvetica-Bold').fontSize(20).fillColor('#8B0000')
     .text("ARP ENGINEERING PTE. LTD.", { align: "center" });
+
+
+    const marginTop = 1;
+const pageWidth = doc.page.width;
+
+doc.image("frontend/images/bizsafe.png", pageWidth - 80 - 10, marginTop, {
+  width: 80
+
+
+
+});
+const imageWidth = 80;
+const xRight = doc.page.width - imageWidth - 20; // 38 is your current left margin, reused as right margin
+doc.image("frontend/images/bqc_cert.png", xRight, 50, { width: imageWidth });
 
   doc.fillColor("black").fontSize(10).font('Helvetica')
     .text("No.5, Soon Lee Street, Pioneer Point, #05-60, Singapore - 627 607", { align: "center" })
