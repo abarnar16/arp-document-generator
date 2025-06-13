@@ -15,7 +15,8 @@ app.use(express.static(path.join(__dirname, 'frontend')));
 // === ROUTE 1: Generate INVOICE PDF ===
 app.post("/generate-invoice", (req, res) => {
   const { items, toName, doNumber, poNumber, invoiceNumber, jobName, grandTotal } = req.body;
-  const doc = new PDFDocument({ margin: 50 });
+  const doc = new PDFDocument({ size: 'A4', margin: 50 });
+
 
   res.setHeader(
     "Content-Disposition",
@@ -143,7 +144,8 @@ if (jobName) {
 // === ROUTE 2: Generate DO/PO-Style PDF ===
 app.post("/generate-do", (req, res) => {
   const { items, toName, doNumber, poNumber, jobName } = req.body;
-  const doc = new PDFDocument({ margin: 50 });
+  const doc = new PDFDocument({ size: 'A4', margin: 50 });
+
 
   res.setHeader("Content-Disposition", "attachment; filename=delivery.pdf");
   res.setHeader("Content-Type", "application/pdf");
@@ -243,7 +245,8 @@ if (jobName) {
 // Place this AFTER API routes, otherwise it will block POST routes
 app.post("/generate-quotation", (req, res) => {
   const { items, toName, attn, quotationNumber, jobName, grandTotal, deliveryDays, paymentDays } = req.body;
-  const doc = new PDFDocument({ margin: 50 });
+  const doc = new PDFDocument({ size: 'A4', margin: 50 });
+
 
   res.setHeader(
     "Content-Disposition",
