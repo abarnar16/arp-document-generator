@@ -51,7 +51,7 @@ const marginTop = 1;
 const pageWidth = doc.page.width;
 
 doc.image("frontend/images/bizsafe.png", pageWidth - 80 - 10, marginTop, {
-  width: 80
+  width: 70
 
 
 
@@ -191,7 +191,7 @@ const marginTop = 1;
 const pageWidth = doc.page.width;
 
 doc.image("frontend/images/bizsafe.png", pageWidth - 80 - 10, marginTop, {
-  width: 80
+  width: 70
 
 
 
@@ -310,7 +310,7 @@ app.post("/generate-quotation", (req, res) => {
 const pageWidth = doc.page.width;
 
 doc.image("frontend/images/bizsafe.png", pageWidth - 80 - 10, marginTop, {
-  width: 80
+  width: 70
 
 
 
