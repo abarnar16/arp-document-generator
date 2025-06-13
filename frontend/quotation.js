@@ -12,7 +12,7 @@ document.getElementById("add-row").addEventListener("click", () => {
       <input type="number" class="form-control quantity" placeholder="Quantity" />
     </div>
   `;
-  document.getElementById("invoice-form").appendChild(row);
+  document.getElementById("quotation-form").appendChild(row);
 });
 
 document.getElementById("submit").addEventListener("click", async () => {
@@ -37,21 +37,19 @@ document.getElementById("submit").addEventListener("click", async () => {
 
   console.log("Grand Total:", grandTotal.toFixed(2));
 
-  let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, '\n');
-  if (toName.toLowerCase() === "palfinger") {
+  let toName = document.getElementById("to-name").value.trim();
+    if (toName.toLowerCase() === "palfinger") {
     toName = `PALFINGER ASIA PACIFIC PTE LTD
 33 Gul Circle
 SINGAPORE 629570`;
   }
 
-  const doNumber = document.getElementById("do-number").value.trim();
-  const poNumber = document.getElementById("po-number").value.trim();
-  const invoiceNumber = document.getElementById("invoice-number").value.trim(); // New line
+  const quotationNumber = document.getElementById("quotation-number").value.trim();
+  const attn = document.getElementById("attn").value.trim();
   const jobName = document.getElementById("job-name").value.trim();
 
-
   try {
-    const response = await fetch("/generate-invoice", {
+    const response = await fetch("/generate-quotation", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,26 +57,25 @@ SINGAPORE 629570`;
       body: JSON.stringify({
         items,
         toName,
-        doNumber,
-        poNumber,
-        invoiceNumber, // Add invoice number here
+        quotationNumber,
+        attn,
         jobName,
         grandTotal,
       }),
     });
 
-    if (!response.ok) throw new Error("Invoice generation failed");
+    if (!response.ok) throw new Error("Quotation generation failed");
 
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "invoice.pdf";
+    a.download = `quotation_${quotationNumber || "no-num"}.pdf`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
   } catch (err) {
-    alert("Error generating invoice PDF: " + err.message);
+    alert("Error generating quotation PDF: " + err.message);
   }
 });

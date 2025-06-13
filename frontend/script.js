@@ -30,14 +30,13 @@ document.getElementById("submit").addEventListener("click", async () => {
   let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, '\n');
   if (toName.toLowerCase() === "palfinger") {
     toName = `PALFINGER ASIA PACIFIC PTE LTD
-NO 4, TUAS LOOP
-SINGAPORE 637342
-PALMS230082/ KA5405653 / OA1952633
-BONGKOT FIELD/ BU :SVC/LSA`;
+33 Gul Circle
+SINGAPORE 629570`;
   }
 
   const doNumber = document.getElementById("do-number").value.trim();
   const poNumber = document.getElementById("po-number").value.trim();
+  const jobName = document.getElementById("job-name").value.trim(); // ✅ Add this
 
   try {
     const response = await fetch("/generate-do", {
@@ -50,6 +49,7 @@ BONGKOT FIELD/ BU :SVC/LSA`;
         toName,
         doNumber,
         poNumber,
+        jobName, // ✅ Include in POST payload
       }),
     });
 
