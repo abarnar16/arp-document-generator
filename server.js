@@ -242,7 +242,7 @@ if (jobName) {
 // Optional SPA fallback route - serve index.html for any unknown GET route
 // Place this AFTER API routes, otherwise it will block POST routes
 app.post("/generate-quotation", (req, res) => {
-  const { items, toName, attn, quotationNumber, jobName, grandTotal } = req.body;
+  const { items, toName, attn, quotationNumber, jobName, grandTotal, deliveryDays, paymentDays } = req.body;
   const doc = new PDFDocument({ margin: 50 });
 
   res.setHeader(
@@ -375,6 +375,14 @@ doc.moveTo(totalX, grandTotalRowY).lineTo(totalX, grandTotalRowY + rowHeight).st
 
   // Write grand total in the last cell
   doc.text(grandTotal.toFixed(2), totalX + 5, grandTotalRowY + 5);
+  // === PAYMENT AND DELIVERY TERMS ===
+doc.font('Helvetica').fontSize(10);
+
+const termsText = `PAYMENT: 30 DAYS\nDELIVERY: ${deliveryDays || "N/A"} DAYS`;
+const termsX = itemX + 5;
+const termsY = tableTop + fixedTableHeight + 5;
+
+doc.text(termsText, termsX, termsY);
 
   // === FOOTER ===
   const footerY = tableTop + fixedTableHeight + 30;
@@ -383,12 +391,20 @@ doc.moveTo(totalX, grandTotalRowY).lineTo(totalX, grandTotalRowY + rowHeight).st
     .text("For ARP Engineering Pte. Ltd", 380, footerY + 10);
 
   // Underlined "RAJA"
-  const rajaText = "RAJA";
-  const rajaX = 380;
-  const rajaY = footerY + 30;
-  doc.font('Helvetica-Bold').fontSize(10).text(rajaText, rajaX, rajaY);
-  const textWidth = doc.widthOfString(rajaText);
-  doc.moveTo(rajaX, rajaY + 12).lineTo(rajaX + textWidth, rajaY + 12).stroke();
+const rajaText = "Raja";
+const rajaX = 380;
+const rajaY = footerY + 30;
+
+// Set the text color for "Raja"
+doc.fillColor('#000080'); // Navy-ish dark blue
+doc.font('Helvetica-Bold').fontSize(10).text(rajaText, rajaX, rajaY);
+
+// Underline "Raja"
+const textWidth = doc.widthOfString(rajaText);
+doc.moveTo(rajaX, rajaY + 12).lineTo(rajaX + textWidth, rajaY + 12).stroke();
+
+// Optional: reset color if needed afterward
+doc.fillColor('black');
 
   doc.end();
 });

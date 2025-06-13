@@ -15,7 +15,9 @@ document.getElementById("add-row").addEventListener("click", () => {
   document.getElementById("quotation-form").appendChild(row);
 });
 
-document.getElementById("submit").addEventListener("click", async () => {
+document.getElementById("submit").addEventListener("click", async (e) => {
+  e.preventDefault(); // Prevent form reload if inside <form>
+
   const names = document.querySelectorAll(".name");
   const prices = document.querySelectorAll(".unit-price");
   const quantities = document.querySelectorAll(".quantity");
@@ -35,10 +37,10 @@ document.getElementById("submit").addEventListener("click", async () => {
     }
   }
 
-  console.log("Grand Total:", grandTotal.toFixed(2));
+
 
   let toName = document.getElementById("to-name").value.trim();
-    if (toName.toLowerCase() === "palfinger") {
+  if (toName.toLowerCase() === "palfinger") {
     toName = `PALFINGER ASIA PACIFIC PTE LTD
 33 Gul Circle
 SINGAPORE 629570`;
@@ -47,6 +49,7 @@ SINGAPORE 629570`;
   const quotationNumber = document.getElementById("quotation-number").value.trim();
   const attn = document.getElementById("attn").value.trim();
   const jobName = document.getElementById("job-name").value.trim();
+  const deliveryDays = document.getElementById("delivery-days").value.trim();
 
   try {
     const response = await fetch("/generate-quotation", {
@@ -60,6 +63,7 @@ SINGAPORE 629570`;
         quotationNumber,
         attn,
         jobName,
+        deliveryDays,
         grandTotal,
       }),
     });
