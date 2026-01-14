@@ -27,7 +27,7 @@ document.getElementById("submit").addEventListener("click", async () => {
     }
   }
 
-  let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, '\n');
+  let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, "\n");
   if (toName.toLowerCase() === "palfinger") {
     toName = `PALFINGER ASIA PACIFIC PTE LTD
 33 Gul Circle
@@ -36,7 +36,10 @@ SINGAPORE 629570`;
 
   const doNumber = document.getElementById("do-number").value.trim();
   const poNumber = document.getElementById("po-number").value.trim();
-  const jobName = document.getElementById("job-name").value.trim(); // ✅ Add this
+  const jobName = document.getElementById("job-name").value.trim();
+
+  // ✅ ADD THIS: manual date from HTML
+  const docDate = document.getElementById("doc-date")?.value || "";
 
   try {
     const response = await fetch("/generate-do", {
@@ -49,7 +52,8 @@ SINGAPORE 629570`;
         toName,
         doNumber,
         poNumber,
-        jobName, // ✅ Include in POST payload
+        jobName,
+        docDate, // ✅ SEND THIS
       }),
     });
 

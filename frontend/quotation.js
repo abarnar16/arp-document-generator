@@ -16,7 +16,7 @@ document.getElementById("add-row").addEventListener("click", () => {
 });
 
 document.getElementById("submit").addEventListener("click", async (e) => {
-  e.preventDefault(); // Prevent form reload if inside <form>
+  e.preventDefault();
 
   const names = document.querySelectorAll(".name");
   const prices = document.querySelectorAll(".unit-price");
@@ -37,8 +37,6 @@ document.getElementById("submit").addEventListener("click", async (e) => {
     }
   }
 
-
-
   let toName = document.getElementById("to-name").value.trim();
   if (toName.toLowerCase() === "palfinger") {
     toName = `PALFINGER ASIA PACIFIC PTE LTD
@@ -50,6 +48,9 @@ SINGAPORE 629570`;
   const attn = document.getElementById("attn").value.trim();
   const jobName = document.getElementById("job-name").value.trim();
   const deliveryDays = document.getElementById("delivery-days").value.trim();
+
+  // ✅ ADD THIS: manual date from HTML
+  const docDate = document.getElementById("doc-date")?.value || "";
 
   try {
     const response = await fetch("/generate-quotation", {
@@ -65,6 +66,7 @@ SINGAPORE 629570`;
         jobName,
         deliveryDays,
         grandTotal,
+        docDate, // ✅ SEND THIS
       }),
     });
 

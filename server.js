@@ -14,8 +14,14 @@ app.use(express.static(path.join(__dirname, 'frontend')));
 
 // === ROUTE 1: Generate INVOICE PDF ===
 app.post("/generate-invoice", (req, res) => {
-  const { items, toName, doNumber, poNumber, invoiceNumber, jobName, grandTotal } = req.body;
-  const doc = new PDFDocument({ size: 'A4', margin: 50 });
+  const { items, toName, doNumber, poNumber, invoiceNumber, jobName, grandTotal, docDate } = req.body;
+  const doc = new PDFDocument({ size: "A4", margin: 50 });
+  console.log("INVOICE docDate:", docDate);
+
+  // ✅ use entered date; fallback to today only if empty
+  const formattedDate = docDate
+    ? new Date(docDate + "T00:00:00").toLocaleDateString("en-GB")
+    : new Date().toLocaleDateString("en-GB");
 
   res.setHeader(
     "Content-Disposition",
@@ -33,7 +39,8 @@ app.post("/generate-invoice", (req, res) => {
     const radius = 15;
 
     doc.rect(0, 0, longer, height1).fill("#889e3e");
-    doc.moveTo(longer, 0)
+    doc
+      .moveTo(longer, 0)
       .lineTo(longer + longer, 0)
       .lineTo(longer + longer, height2)
       .lineTo(longer + radius, height2)
@@ -44,7 +51,10 @@ app.post("/generate-invoice", (req, res) => {
 
     doc.image("frontend/images/navbar_logo.png", 38, 30, { width: 95 });
 
-    doc.font('Helvetica-Bold').fontSize(20).fillColor('#8B0000')
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(20)
+      .fillColor("#8B0000")
       .text("ARP ENGINEERING PTE. LTD.", { align: "center" });
 
     const marginTop = 1;
@@ -55,13 +65,22 @@ app.post("/generate-invoice", (req, res) => {
     const xRight = doc.page.width - imageWidth - 20;
     doc.image("frontend/images/bqc_cert.png", xRight, 50, { width: imageWidth });
 
-    doc.fillColor("black").fontSize(10).font('Helvetica')
+    doc
+      .fillColor("black")
+      .fontSize(10)
+      .font("Helvetica")
       .text("No.5, Soon Lee Street, Pioneer Point, #05-60, Singapore - 627 607", { align: "center" })
       .text("Tel & Fax: 62535529  Mobile: +65 9239 7825", { align: "center" })
       .text("E-mail: arp.engg@yahoo.com.sg", { align: "center" })
       .text("- Co. Regn.No : 201822438E", { align: "center" });
 
-    doc.moveDown(0.6).strokeColor('black').lineWidth(1).moveTo(0, doc.y).lineTo(doc.page.width, doc.y).stroke();
+    doc
+      .moveDown(0.6)
+      .strokeColor("black")
+      .lineWidth(1)
+      .moveTo(0, doc.y)
+      .lineTo(doc.page.width, doc.y)
+      .stroke();
 
     // CUSTOMER INFO
     doc.font("Helvetica");
@@ -77,7 +96,8 @@ app.post("/generate-invoice", (req, res) => {
     }
 
     const rightStartX = 400;
-    doc.text("Date: " + new Date().toLocaleDateString(), rightStartX, 150)
+    doc
+      .text("Date: " + formattedDate, rightStartX, 150)
       .text("Invoice No.: " + (invoiceNumber || "N/A"), rightStartX)
       .text("PO No.: " + (poNumber || "N/A"), rightStartX)
       .text("DO No.: " + (doNumber || "N/A"), rightStartX);
@@ -102,7 +122,7 @@ app.post("/generate-invoice", (req, res) => {
     doc.moveTo(totalX, yStart).lineTo(totalX, yStart + tableHeight).stroke();
     doc.moveTo(itemX, yStart + rowHeight).lineTo(tableRight, yStart + rowHeight).stroke();
 
-    doc.fontSize(10).font('Helvetica-Bold');
+    doc.fontSize(10).font("Helvetica-Bold");
     doc.text("Sl. No", itemX + 5, yStart + 5);
     doc.text("Description", descX + 5, yStart + 5);
     doc.text("Qty", qtyX + 5, yStart + 5);
@@ -118,7 +138,7 @@ app.post("/generate-invoice", (req, res) => {
 
   while (index < items.length) {
     const { name, unitPrice, quantity, total } = items[index];
-    const options = { width: qtyX - descX - 10, align: 'left' };
+    const options = { width: qtyX - descX - 10, align: "left" };
     const descHeight = doc.heightOfString(name, options);
     const effectiveRowHeight = Math.max(rowHeight, descHeight + 10);
 
@@ -130,7 +150,7 @@ app.post("/generate-invoice", (req, res) => {
       y = tableTop + rowHeight;
     }
 
-    doc.font('Helvetica');
+    doc.font("Helvetica");
     doc.text(index + 1, itemX + 5, y + 5);
     doc.text(name, descX + 5, y + 5, options);
     doc.text(quantity, qtyX + 5, y + 5);
@@ -144,13 +164,12 @@ app.post("/generate-invoice", (req, res) => {
   const grandTotalRowY = tableTop + tableHeight - rowHeight;
   doc.moveTo(itemX, grandTotalRowY).lineTo(tableRight, grandTotalRowY).stroke();
   doc.rect(itemX, grandTotalRowY, tableRight - itemX, rowHeight).stroke();
-  doc.font('Helvetica-Bold').fontSize(10);
+  doc.font("Helvetica-Bold").fontSize(10);
   doc.text(grandTotal.toFixed(2), totalX + 5, grandTotalRowY + 5);
 
   const footerY = tableTop + tableHeight + 30;
   doc.lineTo(550, footerY - 10).stroke();
-  doc.fontSize(10).font('Helvetica')
-    .text("For ARP Engineering Pte. Ltd", 380, footerY + 10);
+  doc.fontSize(10).font("Helvetica").text("For ARP Engineering Pte. Ltd", 380, footerY + 10);
 
   doc.end();
 });
@@ -160,9 +179,11 @@ app.post("/generate-invoice", (req, res) => {
 
 // === ROUTE 2: Generate DO/PO-Style PDF ===
 app.post("/generate-do", (req, res) => {
-  const { items, toName, doNumber, poNumber, jobName } = req.body;
+  const { items, toName, doNumber, poNumber, jobName, docDate } = req.body;
   const doc = new PDFDocument({ size: 'A4', margin: 50 });
-
+  const formattedDate = docDate
+    ? new Date(docDate + "T00:00:00").toLocaleDateString("en-GB")
+    : new Date().toLocaleDateString("en-GB");
   res.setHeader("Content-Disposition", "attachment; filename=delivery.pdf");
   res.setHeader("Content-Type", "application/pdf");
   doc.pipe(res);
@@ -218,7 +239,7 @@ app.post("/generate-do", (req, res) => {
     }
 
     const rightStartX = 400;
-    doc.text("Date: " + new Date().toLocaleDateString(), rightStartX, 150)
+    doc.text("Date: " + formattedDate, rightStartX, 150)
       .text("DO No.: " + (doNumber || "N/A"), rightStartX)
       .text("PO No.: " + (poNumber || "N/A"), rightStartX);
   }
@@ -282,9 +303,11 @@ app.post("/generate-do", (req, res) => {
 // Optional SPA fallback route - serve index.html for any unknown GET route
 // Place this AFTER API routes, otherwise it will block POST routes
 app.post("/generate-quotation", (req, res) => {
-  const { items, toName, attn, quotationNumber, jobName, grandTotal, deliveryDays, paymentDays } = req.body;
+  const { items, toName, attn, quotationNumber, jobName, grandTotal, deliveryDays, paymentDays, docDate } = req.body;
   const doc = new PDFDocument({ size: 'A4', margin: 50 });
-
+  const formattedDate = docDate
+    ? new Date(docDate + "T00:00:00").toLocaleDateString("en-GB")
+    : new Date().toLocaleDateString("en-GB");
   res.setHeader("Content-Disposition", `attachment; filename=quotation_${quotationNumber || "no-num"}.pdf`);
   res.setHeader("Content-Type", "application/pdf");
   doc.pipe(res);
@@ -353,7 +376,7 @@ Attn: ${attn || "N/A"}`, 50, introStartYGlobal, { width: 350 });
       doc.fillColor("black");
     }
 
-    doc.text("Date: " + new Date().toLocaleDateString(), 420, 150)
+    doc.text("Date: " + formattedDate, 420, 150)
        .text("Quotation No.: " + (quotationNumber || "N/A"), 420);
   };
 

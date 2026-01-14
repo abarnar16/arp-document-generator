@@ -35,9 +35,7 @@ document.getElementById("submit").addEventListener("click", async () => {
     }
   }
 
-  console.log("Grand Total:", grandTotal.toFixed(2));
-
-  let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, '\n');
+  let toName = document.getElementById("to-name").value.trim().replace(/\r\n|\r|\n/g, "\n");
   if (toName.toLowerCase() === "palfinger") {
     toName = `PALFINGER ASIA PACIFIC PTE LTD
 33 Gul Circle
@@ -46,9 +44,11 @@ SINGAPORE 629570`;
 
   const doNumber = document.getElementById("do-number").value.trim();
   const poNumber = document.getElementById("po-number").value.trim();
-  const invoiceNumber = document.getElementById("invoice-number").value.trim(); // New line
+  const invoiceNumber = document.getElementById("invoice-number").value.trim();
   const jobName = document.getElementById("job-name").value.trim();
 
+  // ✅ ADD THIS: read manual date from HTML
+  const docDate = document.getElementById("doc-date")?.value || "";
 
   try {
     const response = await fetch("/generate-invoice", {
@@ -61,9 +61,10 @@ SINGAPORE 629570`;
         toName,
         doNumber,
         poNumber,
-        invoiceNumber, // Add invoice number here
+        invoiceNumber,
         jobName,
         grandTotal,
+        docDate, // ✅ SEND THIS
       }),
     });
 
